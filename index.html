@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reporte de Ventas y Envíos · TikTok Shop</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;600;700&family=Montserrat:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+  :root{
+    --ink:#1A1A1A; --paper:#FAFAF8; --card:#FFFFFF;
+    --line:#E8E8E4; --muted:#767674;
+    --accent:#E14300; --accent2:#E06B00; --gold:#E01C00;
+    --niebla:#D0D0D0;
+    --shadow:0 1px 2px rgba(26,26,26,.04),0 10px 28px rgba(26,26,26,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:'Montserrat',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px}
+
+  /* Header — recibo de paquetería */
+  header{padding:48px 0 36px;border-bottom:2px dashed var(--line);position:relative}
+  body::before{content:"";position:fixed;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--gold));z-index:100}
+  .confbar{display:flex;align-items:center;gap:10px;background:#1A1A1A;color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em}
+  .confbar .lock{color:var(--accent);font-size:14px}
+  .confbar b{color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+  .confbar .ctext{color:#D8D8D8}
+  @media(max-width:560px){.confbar{flex-wrap:wrap;font-size:11px}}
+  .brandbar{display:flex;align-items:center;gap:18px;margin-bottom:24px}
+  .brandbar img{height:56px;width:auto;display:block}
+  .brandbar .bdiv{width:1px;height:44px;background:var(--line)}
+  .brandbar .btag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.5}
+  .brandbar .btag b{display:block;color:var(--ink);font-size:13px;letter-spacing:.02em;text-transform:none;font-weight:700;margin-top:2px}
+  .leadchip{display:inline-flex;align-items:center;gap:8px;background:rgba(224,107,0,.08);border:1px solid rgba(224,107,0,.25);border-radius:30px;padding:7px 16px;font-size:13px;color:var(--ink);margin-top:4px}
+  .leadchip .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .leadchip b{font-weight:700}
+  .updated{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .updated b{color:var(--accent)}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-family:'Oswald',sans-serif;font-size:clamp(34px,5.5vw,56px);font-weight:700;letter-spacing:.01em;text-transform:uppercase;margin:10px 0 6px;line-height:1.0}
+  .sub{color:var(--muted);font-size:15px;max-width:640px}
+  .meta{display:flex;gap:28px;flex-wrap:wrap;margin-top:22px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .meta b{color:var(--ink);font-weight:700;display:block;font-size:14px;margin-top:3px}
+
+  section{margin-top:52px}
+  .shead{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+  .shead .n{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:700}
+  .shead h2{font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .shead .rule{flex:1;height:1px;background:var(--line)}
+
+  /* KPI grid */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+  .kpi .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .kpi .val{font-family:'Oswald',sans-serif;font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:8px}
+  .kpi .foot{font-size:12px;color:var(--muted);margin-top:6px}
+  .kpi.hl{background:linear-gradient(135deg,#E14300,#E01C00);color:#fff;border-color:transparent}
+  .kpi.hl .lbl,.kpi.hl .foot{color:#FFE0D0}
+
+  /* Envio banner */
+  .ship{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:var(--shadow)}
+  .shipbar{display:flex;height:46px;border-radius:10px;overflow:hidden;margin:18px 0 14px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px}
+  .shipbar .free{background:var(--accent2);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:76.7%}
+  .shipbar .paid{background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:23.3%}
+  .legend{display:flex;gap:24px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:middle}
+  .note{margin-top:16px;padding:14px 16px;background:rgba(224,27,0,.06);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:14px;color:#5A5A58}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+  .panel h3{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;margin-bottom:4px}
+  .panel .p-sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .chart-box{position:relative;height:260px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:0 10px 10px;border-bottom:1px solid var(--line)}
+  td{padding:11px 10px;border-bottom:1px solid var(--line)}
+  tr:last-child td{border-bottom:none}
+  .rank{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;width:36px}
+  .pname{font-weight:500}
+  .num{text-align:right;font-family:'JetBrains Mono',monospace;font-weight:500}
+  th.num{text-align:right}
+
+  footer{margin-top:60px;padding-top:24px;border-top:2px dashed var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  /* Explorador drill-down */
+  .explorer-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+  .explorer-controls input,.explorer-controls select{font-family:'Montserrat';font-size:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+  .explorer-controls input{flex:1;min-width:200px}
+  .explorer-controls input:focus,.explorer-controls select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+  .crumbs{display:flex;align-items:center;gap:8px;font-size:13px;font-family:'JetBrains Mono';color:var(--muted);margin-bottom:14px;flex-wrap:wrap}
+  .crumbs a{color:var(--accent);cursor:pointer;text-decoration:none;font-weight:700}
+  .crumbs a:hover{text-decoration:underline}
+  .crumbs .sep{opacity:.5}
+  .drill-table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .drill-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;padding:0 12px 10px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+  .drill-table th.num{text-align:right}
+  .drill-table th .arrow{opacity:.35;font-size:10px;margin-left:3px}
+  .drill-table th.sorted .arrow{opacity:1;color:var(--accent)}
+  .drill-table td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .drill-table tbody tr:last-child td{border-bottom:none}
+  .drill-table tbody tr.clickable{cursor:pointer;transition:background .12s}
+  .drill-table tbody tr.clickable:hover{background:#FBF4EF}
+  .drill-table .cname{font-weight:600;max-width:340px}
+  .drill-table .chev{color:var(--accent);font-weight:700;margin-left:6px;opacity:.6}
+  .drill-table tr.clickable:hover .chev{opacity:1}
+  .num{text-align:right;font-family:'JetBrains Mono',monospace;font-weight:500;white-space:nowrap}
+  .money{font-weight:700}
+  .rank{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;width:36px}
+  .bars{display:flex;height:8px;width:110px;border-radius:4px;overflow:hidden;background:#EAEAE6}
+  .bars .c{background:var(--accent2)}.bars .e{background:var(--niebla)}.bars .x{background:var(--gold)}
+  .shipcell{font-family:'JetBrains Mono';font-size:12px}
+  .free{color:var(--accent2);font-weight:700}.paid{color:var(--accent);font-weight:700}
+  .cancelhi{color:var(--accent);font-weight:700}
+  .count{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);margin-left:auto}
+  .catpill{display:inline-block;font-size:11px;font-family:'JetBrains Mono';padding:3px 9px;border-radius:20px;background:rgba(224,107,0,.12);color:#B85400;white-space:nowrap}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  .backbtn{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono';font-size:12px;font-weight:700;color:var(--accent);background:rgba(224,107,0,.1);border:1px solid rgba(224,107,0,.25);border-radius:8px;padding:6px 12px;cursor:pointer;margin-bottom:14px}
+  .backbtn:hover{background:rgba(224,107,0,.18)}
+
+  @media(max-width:820px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="confbar">
+      <span class="lock">●</span>
+      <b>Confidencial</b>
+      <span class="ctext">— Documento de uso interno exclusivo del equipo Foro B. Prohibida su distribución o divulgación externa.</span>
+    </div>
+    <div class="brandbar">
+      <img src="data:image/png;base64,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" alt="Logo Foro B">
+      <div class="bdiv"></div>
+      <div class="btag">Documento del equipo<b>FORO B</b></div>
+    </div>
+    <div class="eyebrow">Reporte interno · Enfocado al equipo Foro B</div>
+    <h1>Ventas &amp; Envíos<br>TikTok Shop</h1>
+    <p class="sub">Panorama general del historial de pedidos: desempeño de ventas, comportamiento de envíos y dónde se concentra la demanda. Documento de uso interno para el equipo de Foro B.</p>
+    <div style="margin:18px 0 6px">
+      <span class="leadchip"><span class="dot"></span>Líder de Foro B: <b>S. Paula Reyes</b></span>
+    </div>
+    <div class="meta">
+      <div>Periodo<b>Jul 2025 – Jul 2026</b></div>
+      <div>Pedidos totales<b>3,118</b></div>
+      <div>Última actualización<b>16 de julio de 2026, 20:58 hrs (CDMX)</b></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="shead"><span class="n">01</span><h2>Resumen ejecutivo</h2><div class="rule"></div></div>
+    <div class="kpis">
+      <div class="kpi hl">
+        <div class="lbl">GMV total</div>
+        <div class="val">$451,551</div>
+        <div class="foot">$316,392 en pedidos no cancelados</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Pedidos completados</div>
+        <div class="val">1,643</div>
+        <div class="foot">de 3,118 totales</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Ticket promedio</div>
+        <div class="val">$137</div>
+        <div class="foot">por pedido válido</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Tasa de cancelación</div>
+        <div class="val">25.7%</div>
+        <div class="foot">801 pedidos cancelados</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="n">02</span><h2>Comportamiento de envíos</h2><div class="rule"></div></div>
+    <div class="ship">
+      <h3 style="font-family:'Oswald';font-size:16px;font-weight:600">¿Cuándo se cobra el envío?</h3>
+      <p class="p-sub" style="font-size:13px;color:var(--muted);margin-top:4px">Sobre 2,317 pedidos no cancelados</p>
+      <div class="shipbar">
+        <div class="free">GRATIS · 77%</div>
+        <div class="paid">PAGA · 23%</div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--accent2)"></i>Envío gratis para el cliente — 1,778 pedidos</span>
+        <span><i style="background:var(--accent)"></i>El cliente paga envío — 539 pedidos</span>
+      </div>
+      <div class="note"><b>Clave:</b> en ningún pedido tú absorbes el costo de envío. Cuando el envío es gratis, lo subsidia la plataforma — un total de <b>$146,362</b> en descuentos de TikTok a lo largo del periodo. Los clientes pagaron <b>$22,913</b> en envíos.</div>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="panel">
+        <h3>Tarifa base de envío</h3>
+        <div class="p-sub">Costo original del envío antes de descuentos (por # de pedidos)</div>
+        <div class="chart-box"><canvas id="cTarifa"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Cuánto paga el cliente</h3>
+        <div class="p-sub">Cuántos pedidos pagaron cada monto de envío (cuando NO es gratis)</div>
+        <div class="chart-box"><canvas id="cPaga"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="n">03</span><h2>Canal de venta</h2><div class="rule"></div></div>
+    <div class="ship">
+      <h3 style="font-family:'Oswald';font-size:16px;font-weight:600">¿Cuánto se vende en LIVE?</h3>
+      <p class="p-sub" style="font-size:13px;color:var(--muted);margin-top:4px">Pedidos no cancelados por canal · 2,317 pedidos</p>
+      <div class="shipbar">
+        <div style="background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:53%">LIVE · 53%</div>
+        <div style="background:var(--accent2);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:32%">Tarjetas · 32%</div>
+        <div style="background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:15%">Videos · 15%</div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--accent)"></i>LIVE (transmisiones en vivo) — 1,238 pedidos · $145,961</span>
+        <span><i style="background:var(--accent2)"></i>Tarjetas de producto — 733 pedidos · $112,842</span>
+        <span><i style="background:var(--gold)"></i>Videos — 346 pedidos · $57,588</span>
+      </div>
+      <div class="note"><b>El LIVE es tu canal #1:</b> genera el <b>53%</b> de los pedidos y <b>$145,961</b> de ingreso (46% del GMV). Más de la mitad de tus ventas ocurren durante transmisiones en vivo.</div>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="panel">
+        <h3>Pedidos por canal</h3>
+        <div class="p-sub">Pedidos no cancelados</div>
+        <div class="chart-box"><canvas id="cCanalPed"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Ingreso por canal</h3>
+        <div class="p-sub">GMV de pedidos no cancelados (MXN)</div>
+        <div class="chart-box"><canvas id="cCanalGmv"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="n">04</span><h2>Ventas por afiliados</h2><div class="rule"></div></div>
+    <div class="ship">
+      <h3 style="font-family:'Oswald';font-size:16px;font-weight:600">¿Qué parte de las ventas viene de afiliados?</h3>
+      <p class="p-sub" style="font-size:13px;color:var(--muted);margin-top:4px">Por creador atribuido · 2,317 pedidos no cancelados</p>
+      <div class="shipbar">
+        <div style="background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:55%">Propia · 55%</div>
+        <div style="background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:33%">Orgánico · 33%</div>
+        <div style="background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-basis:12%">Afiliados · 12%</div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--accent)"></i>Afiliados (creadores externos) — 286 pedidos · $50,304</span>
+        <span><i style="background:var(--ink)"></i>Cuenta propia (@biusupply) — 1,277 pedidos · $150,521</span>
+        <span><i style="background:var(--gold)"></i>Orgánico / sin creador — 754 pedidos · $115,566</span>
+      </div>
+      <div class="note"><b>Los afiliados generan el 12.3% de los pedidos</b> (15.9% del GMV, $50,304), a través de <b>45 creadores distintos</b>. Pero está muy concentrado: los 2 principales (@liz.tts0 y @iptefgh) aportan la mayoría de esas ventas.</div>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="panel">
+        <h3>Origen de las ventas</h3>
+        <div class="p-sub">Pedidos no cancelados por tipo de creador</div>
+        <div class="chart-box"><canvas id="cAffMix"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Top afiliados por pedidos</h3>
+        <div class="p-sub">Pedidos y GMV de cada creador externo</div>
+        <table style="margin-top:6px;font-size:13px">
+          <thead><tr><th>#</th><th>Afiliado</th><th class="num">Pedidos</th><th class="num">GMV</th></tr></thead>
+          <tbody><tr><td class='rank'>01</td><td class='pname'>@liz.tts0</td><td class='num'>139</td><td class='num money'>$20,870</td></tr>
+<tr><td class='rank'>02</td><td class='pname'>@iptefgh</td><td class='num'>62</td><td class='num money'>$15,862</td></tr>
+<tr><td class='rank'>03</td><td class='pname'>@wqtdhej</td><td class='num'>13</td><td class='num money'>$3,481</td></tr>
+<tr><td class='rank'>04</td><td class='pname'>@blanshop1511</td><td class='num'>6</td><td class='num money'>$376</td></tr>
+<tr><td class='rank'>05</td><td class='pname'>@cammerazh</td><td class='num'>5</td><td class='num money'>$812</td></tr>
+<tr><td class='rank'>06</td><td class='pname'>@judithcc8</td><td class='num'>4</td><td class='num money'>$582</td></tr>
+<tr><td class='rank'>07</td><td class='pname'>@mmartinezz5</td><td class='num'>4</td><td class='num money'>$400</td></tr>
+<tr><td class='rank'>08</td><td class='pname'>@thaliaverdugoo</td><td class='num'>3</td><td class='num money'>$240</td></tr>
+</tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="n">05</span><h2>Ventas en el tiempo</h2><div class="rule"></div></div>
+    <div class="panel">
+      <h3>GMV y volumen de pedidos por mes</h3>
+      <div class="p-sub">Ingreso bruto (barras) contra número de pedidos (línea)</div>
+      <div class="chart-box" style="height:320px"><canvas id="cMes"></canvas></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="n">06</span><h2>Dónde y qué se vende — explora el detalle</h2><div class="rule"></div></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Top estados</h3>
+        <div class="p-sub">Pedidos válidos por entidad de destino</div>
+        <div class="chart-box"><canvas id="cEstado"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Categorías con más unidades</h3>
+        <div class="p-sub">Unidades vendidas por categoría de producto</div>
+        <div class="chart-box"><canvas id="cCat"></canvas></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:20px">
+      <h3>Explorador de productos</h3>
+      <div class="p-sub" id="explorerSub">Haz clic en una categoría para ver sus productos, y en un producto para ver su detalle.</div>
+      <div class="explorer-controls">
+        <input id="drillSearch" type="text" placeholder="Buscar categoría o producto…" aria-label="Buscar">
+        <span class="count" id="drillCount"></span>
+      </div>
+      <div class="crumbs" id="crumbs"></div>
+      <div id="drillView"></div>
+      <div class="empty" id="drillEmpty" style="display:none">Sin resultados.</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>TikTok Shop · Documento interno del equipo <b style="color:var(--ink)">Foro B</b> · Líder de Foro B: <b style="color:var(--ink)">S. Paula Reyes</b> · <b style="color:var(--accent)">CONFIDENCIAL</b></span>
+    <span class="updated">Última actualización: <b>16 de julio de 2026, 20:58 hrs (CDMX)</b> · 3,118 pedidos</span>
+  </footer>
+</div>
+
+<script>
+const INK='#1A1A1A',MUT='#767674',ACC='#E14300',ACC2='#E06B00',GOLD='#E01C00',LINE='#E8E8E4',NIEBLA='#8A8A8A';
+Chart.defaults.font.family="'Montserrat',sans-serif";
+Chart.defaults.color=MUT;
+Chart.defaults.font.size=12;
+const noGrid={grid:{display:false},border:{color:LINE}};
+const yGrid={grid:{color:LINE},border:{display:false}};
+
+const axT={display:true,color:MUT,font:{size:11,weight:'600'}};
+new Chart(cTarifa,{type:'bar',data:{labels:["$59", "$39", "$49", "$69", "$0", "$139", "$89", "$109"],datasets:[{data:[1339, 674, 401, 240, 216, 60, 38, 33],backgroundColor:ACC2,borderRadius:5}]},
+ options:{plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>'Tarifa '+i[0].label,label:c=>c.parsed.y.toLocaleString('es-MX')+' pedidos'}}},
+  scales:{x:{...noGrid,title:{...axT,text:'Tarifa base de envío (MXN)'}},y:{...yGrid,title:{...axT,text:'Número de pedidos'}}},maintainAspectRatio:false}});
+
+new Chart(cPaga,{type:'bar',data:{labels:["$10", "$20", "$59", "$30", "$39", "$49", "$50", "$110"],datasets:[{data:[304, 168, 88, 81, 36, 16, 16, 14],backgroundColor:ACC,borderRadius:5}]},
+ options:{plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>'Envío pagado: '+i[0].label,label:c=>c.parsed.y.toLocaleString('es-MX')+' pedidos'}}},
+  scales:{x:{...noGrid,title:{...axT,text:'Monto de envío que paga el cliente (MXN)'}},y:{...yGrid,title:{...axT,text:'Número de pedidos'}}},maintainAspectRatio:false}});
+
+new Chart(cMes,{data:{labels:["2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],datasets:[
+  {type:'bar',label:'GMV ($)',data:[2808.24, 36349.78, 15645.74, 33647.3, 37346.88, 9986.34, 42358.24, 8711.17, 2486.4, 13376.11, 93637.58, 130145.01, 25052.39],backgroundColor:'rgba(225,67,0,.9)',borderRadius:5,yAxisID:'y',order:2},
+  {type:'line',label:'Pedidos',data:[12, 110, 98, 216, 190, 34, 170, 29, 24, 100, 999, 973, 163],borderColor:INK,backgroundColor:INK,tension:.35,pointRadius:3,pointBackgroundColor:GOLD,yAxisID:'y1',order:1}
+ ]},options:{plugins:{legend:{position:'top',labels:{usePointStyle:true,boxWidth:8}}},
+  scales:{x:noGrid,y:{...yGrid,position:'left',title:{display:true,text:'GMV ($)'}},
+   y1:{position:'right',grid:{display:false},border:{display:false},title:{display:true,text:'Pedidos'}}},maintainAspectRatio:false}});
+
+new Chart(cEstado,{type:'bar',data:{labels:["Estado de M\u00e9xico", "Ciudad de M\u00e9xico", "Jalisco", "Puebla", "Veracruz de Ignacio de la Llave", "M\u00e9xico", "Guanajuato", "Nuevo Le\u00f3n"],datasets:[{data:[365, 251, 184, 130, 123, 121, 110, 99],backgroundColor:INK,borderRadius:5}]},
+ options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:yGrid,y:noGrid},maintainAspectRatio:false}});
+
+new Chart(cCat,{type:'doughnut',data:{labels:["Dispositivos de depilaci\u00f3n", "Kits de herramientas", "Dispositivos de belleza facial", "Limpiadores para el hogar", "Platos", "Mochilas"],datasets:[{data:[1029, 400, 223, 206, 179, 129],
+  backgroundColor:[ACC,ACC2,GOLD,'#F08A3C','#B31600','#8A8A8A'],borderWidth:2,borderColor:'#fff'}]},
+ options:{onClick:(e,el,ch)=>{if(el.length){const lbl=ch.data.labels[el[0].index];const c=CATS.find(x=>x.categoria===lbl);if(c){dCat=c;dLevel='cat';dSort={k:'ingreso',dir:-1};dSearch.value='';render();document.getElementById('explorerSub').scrollIntoView({behavior:'smooth',block:'center'});}}},onHover:(e,el)=>{e.native.target.style.cursor=el.length?'pointer':'default';},plugins:{legend:{position:'right',labels:{usePointStyle:true,boxWidth:8,padding:10,font:{size:11}}},tooltip:{callbacks:{afterLabel:()=>'Clic para explorar ›'}}},cutout:'58%',maintainAspectRatio:false}});
+
+const axC={display:true,color:MUT,font:{size:11,weight:'600'}};
+const canalL=["LIVE","Tarjetas de producto","Videos"];
+const canalCol=[ACC,ACC2,GOLD];
+new Chart(cCanalPed,{type:'bar',data:{labels:canalL,datasets:[{data:[1238,733,346],backgroundColor:canalCol,borderRadius:5}]},
+ options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toLocaleString('es-MX')+' pedidos'}}},
+  scales:{x:noGrid,y:{...yGrid,title:{...axC,text:'Número de pedidos'}}},maintainAspectRatio:false}});
+new Chart(cCanalGmv,{type:'bar',data:{labels:canalL,datasets:[{data:[145961.0,112842.0,57588.0],backgroundColor:canalCol,borderRadius:5}]},
+ options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('es-MX')}}},
+  scales:{x:noGrid,y:{...yGrid,title:{...axC,text:'GMV (MXN)'}}},maintainAspectRatio:false}});
+
+new Chart(cAffMix,{type:'doughnut',data:{labels:["Cuenta propia","Orgánico / sin creador","Afiliados"],
+ datasets:[{data:[1277,754,286],backgroundColor:[INK,GOLD,ACC],borderWidth:2,borderColor:'#fff'}]},
+ options:{plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:12,font:{size:12}}},
+  tooltip:{callbacks:{label:c=>c.label+': '+c.parsed.toLocaleString('es-MX')+' pedidos ('+Math.round(c.parsed/2317*100)+'%)'}}},cutout:'60%',maintainAspectRatio:false}});
+
+/* ===== EXPLORADOR DRILL-DOWN (categoría → producto → detalle) ===== */
+const CATS = [{"categoria": "Dispositivos de depilación", "pedidos": 1250, "unidades": 1355, "ingreso": 143018.0, "n_prod": 5, "productos": [{"producto": "Depiladora para Rostro y Cuerpo con Gafas de Sol y Accesorios Incluidos", "categoria": "Dispositivos de depilación", "pedidos": 553, "unidades": 568, "precio": 290.0, "ingreso": 79172.0, "completado": 80, "enviado": 334, "cancelado": 139, "cancel_pct": 25.0, "envio_paga": 90, "envio_gratis": 463}, {"producto": "Recortadora de bikini, afeitadota y depiladora eléctrica 2 en 1 para cuerpo y rostro", "categoria": "Dispositivos de depilación", "pedidos": 517, "unidades": 601, "precio": 119.0, "ingreso": 36185.0, "completado": 399, "enviado": 0, "cancelado": 118, "cancel_pct": 23.0, "envio_paga": 220, "envio_gratis": 297}, {"producto": "Depiladora para Rostro y Cuerpo con Gafas de Sol y Accesorios Incluidos color Blanco", "categoria": "Dispositivos de depilación", "pedidos": 92, "unidades": 96, "precio": 441.0, "ingreso": 17273.0, "completado": 1, "enviado": 62, "cancelado": 29, "cancel_pct": 32.0, "envio_paga": 10, "envio_gratis": 82}, {"producto": "Recortadora de bikini para mujer, afeitadota y depiladora eléctrica 2 en 1 para cuerpo y rostro con diseño", "categoria": "Dispositivos de depilación", "pedidos": 85, "unidades": 87, "precio": 360.0, "ingreso": 10192.0, "completado": 62, "enviado": 0, "cancelado": 23, "cancel_pct": 27.0, "envio_paga": 17, "envio_gratis": 68}, {"producto": "Depiladora 2 en 1", "categoria": "Dispositivos de depilación", "pedidos": 3, "unidades": 3, "precio": 0.0, "ingreso": 196.0, "completado": 2, "enviado": 0, "cancelado": 1, "cancel_pct": 33.0, "envio_paga": 0, "envio_gratis": 3}]}, {"categoria": "Platos", "pedidos": 243, "unidades": 253, "ingreso": 58499.0, "n_prod": 1, "productos": [{"producto": "Set de Vajilla Orgánica de Trigo y Plástico 62 Piezas", "categoria": "Platos", "pedidos": 243, "unidades": 253, "precio": 299.0, "ingreso": 58499.0, "completado": 171, "enviado": 0, "cancelado": 72, "cancel_pct": 30.0, "envio_paga": 35, "envio_gratis": 208}]}, {"categoria": "Mochilas", "pedidos": 188, "unidades": 197, "ingreso": 41410.0, "n_prod": 17, "productos": [{"producto": "Mochila Escolar con Diseño de Capibara", "categoria": "Mochilas", "pedidos": 31, "unidades": 32, "precio": 520.0, "ingreso": 10150.0, "completado": 20, "enviado": 0, "cancelado": 11, "cancel_pct": 35.0, "envio_paga": 31, "envio_gratis": 0}, {"producto": "Mochila Espacial Unicornio Impermeable Reforzada", "categoria": "Mochilas", "pedidos": 25, "unidades": 25, "precio": 499.0, "ingreso": 6459.0, "completado": 16, "enviado": 0, "cancelado": 9, "cancel_pct": 36.0, "envio_paga": 4, "envio_gratis": 21}, {"producto": "Mochila Escolar Y Viaje Juvenil Kawaii Impermeable Para Laptop", "categoria": "Mochilas", "pedidos": 12, "unidades": 12, "precio": 667.0, "ingreso": 4358.0, "completado": 10, "enviado": 0, "cancelado": 2, "cancel_pct": 17.0, "envio_paga": 12, "envio_gratis": 0}, {"producto": "Mochila de moda color blanco", "categoria": "Mochilas", "pedidos": 41, "unidades": 43, "precio": 495.0, "ingreso": 3497.0, "completado": 25, "enviado": 0, "cancelado": 16, "cancel_pct": 39.0, "envio_paga": 37, "envio_gratis": 4}, {"producto": "Mochila escolar de color negro con rosa", "categoria": "Mochilas", "pedidos": 12, "unidades": 12, "precio": 520.0, "ingreso": 3464.0, "completado": 10, "enviado": 0, "cancelado": 2, "cancel_pct": 17.0, "envio_paga": 12, "envio_gratis": 0}, {"producto": "Mochila negra con sonrisa", "categoria": "Mochilas", "pedidos": 8, "unidades": 8, "precio": 660.0, "ingreso": 3282.0, "completado": 4, "enviado": 0, "cancelado": 4, "cancel_pct": 50.0, "envio_paga": 1, "envio_gratis": 7}, {"producto": "Bolsa crossbody", "categoria": "Mochilas", "pedidos": 30, "unidades": 35, "precio": 320.0, "ingreso": 2422.0, "completado": 16, "enviado": 0, "cancelado": 14, "cancel_pct": 47.0, "envio_paga": 2, "envio_gratis": 28}, {"producto": "Mochila escolar negra con estampado blanco", "categoria": "Mochilas", "pedidos": 7, "unidades": 7, "precio": 631.0, "ingreso": 2379.0, "completado": 7, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 7, "envio_gratis": 0}, {"producto": "Mochila Multifuncional Con Puerto USB Para Laptop Y Viaje", "categoria": "Mochilas", "pedidos": 9, "unidades": 9, "precio": 540.0, "ingreso": 1886.0, "completado": 8, "enviado": 0, "cancelado": 1, "cancel_pct": 11.0, "envio_paga": 8, "envio_gratis": 1}, {"producto": "Mochila escolar con estampado de arcoiris", "categoria": "Mochilas", "pedidos": 3, "unidades": 3, "precio": 919.0, "ingreso": 1540.0, "completado": 2, "enviado": 0, "cancelado": 1, "cancel_pct": 33.0, "envio_paga": 3, "envio_gratis": 0}, {"producto": "Mochila Urbana Casual 16L con 6 Colores Diferentes 43x27x14 cm Asas Acolchadas y Bolsillos Laterales de Malla para Botellas", "categoria": "Mochilas", "pedidos": 2, "unidades": 3, "precio": 443.0, "ingreso": 932.0, "completado": 0, "enviado": 1, "cancelado": 1, "cancel_pct": 50.0, "envio_paga": 1, "envio_gratis": 1}, {"producto": "Mochila (5 colores diferentes)", "categoria": "Mochilas", "pedidos": 1, "unidades": 1, "precio": 443.0, "ingreso": 331.0, "completado": 0, "enviado": 0, "cancelado": 1, "cancel_pct": 100.0, "envio_paga": 1, "envio_gratis": 0}, {"producto": "Mochila (6 colores diferentes)", "categoria": "Mochilas", "pedidos": 1, "unidades": 1, "precio": 443.0, "ingreso": 264.0, "completado": 0, "enviado": 1, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}, {"producto": "Mochila Escolar Spider Man 3D Roja y Azul", "categoria": "Mochilas", "pedidos": 1, "unidades": 1, "precio": 523.0, "ingreso": 227.0, "completado": 1, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 1, "envio_gratis": 0}, {"producto": "Mochila de Moda Elegante y Atemporal para Diario Escuela Trabajo o Viajes Cortos Tamaño Ideal Resistente y Duradero", "categoria": "Mochilas", "pedidos": 2, "unidades": 2, "precio": 495.0, "ingreso": 219.0, "completado": 2, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 2, "envio_gratis": 0}, {"producto": "Maleta Deportiva Versátil Con Compartimento Para Zapatos", "categoria": "Mochilas", "pedidos": 1, "unidades": 1, "precio": 0.0, "ingreso": 0.0, "completado": 1, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}, {"producto": "Mochila Para Laptop 15.6 Pulgadas Viaje Y Trabajo Caqui", "categoria": "Mochilas", "pedidos": 2, "unidades": 2, "precio": 0.0, "ingreso": 0.0, "completado": 2, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 2}]}, {"categoria": "Dispositivos de belleza corporal", "pedidos": 159, "unidades": 162, "ingreso": 27624.0, "n_prod": 2, "productos": [{"producto": "Máscara De Terapia Lumínica 7 Colores Y 90 Led Antiedad", "categoria": "Dispositivos de belleza corporal", "pedidos": 113, "unidades": 116, "precio": 270.0, "ingreso": 22552.0, "completado": 16, "enviado": 62, "cancelado": 32, "cancel_pct": 28.0, "envio_paga": 7, "envio_gratis": 106}, {"producto": "Set de Masajeador Facial de Microcorriente, Dispositivo de Estiramiento Facial de Microcorriente y Recortadora de bikini, afeitadota y depiladora eléctrica 2 en 1 para cuerpo y rostro", "categoria": "Dispositivos de belleza corporal", "pedidos": 46, "unidades": 46, "precio": 150.0, "ingreso": 5072.0, "completado": 38, "enviado": 0, "cancelado": 8, "cancel_pct": 17.0, "envio_paga": 14, "envio_gratis": 32}]}, {"categoria": "Kits de herramientas", "pedidos": 271, "unidades": 527, "ingreso": 27391.0, "n_prod": 2, "productos": [{"producto": "Juego Profesional de 46 Herramientas Mecánicas de Acero al Cromo Vanadio", "categoria": "Kits de herramientas", "pedidos": 151, "unidades": 344, "precio": 120.0, "ingreso": 16897.0, "completado": 111, "enviado": 0, "cancelado": 40, "cancel_pct": 26.0, "envio_paga": 66, "envio_gratis": 85}, {"producto": "Set de herramientas + lampara de cabeza", "categoria": "Kits de herramientas", "pedidos": 120, "unidades": 183, "precio": 240.0, "ingreso": 10494.0, "completado": 86, "enviado": 0, "cancelado": 34, "cancel_pct": 28.0, "envio_paga": 49, "envio_gratis": 71}]}, {"categoria": "Dispositivos de belleza facial", "pedidos": 213, "unidades": 270, "ingreso": 17249.0, "n_prod": 6, "productos": [{"producto": "Masajeador Facial de Microcorriente, Dispositivo de Estiramiento Facial de Microcorriente", "categoria": "Dispositivos de belleza facial", "pedidos": 149, "unidades": 193, "precio": 120.0, "ingreso": 12473.0, "completado": 115, "enviado": 5, "cancelado": 29, "cancel_pct": 19.0, "envio_paga": 25, "envio_gratis": 124}, {"producto": "COMBO Bolsa de 3 Colores Marrón Azul Verde + Masajeador de Microcorriente Rosa o Blanco Aleatorio", "categoria": "Dispositivos de belleza facial", "pedidos": 22, "unidades": 30, "precio": 150.0, "ingreso": 2327.0, "completado": 17, "enviado": 0, "cancelado": 5, "cancel_pct": 23.0, "envio_paga": 0, "envio_gratis": 22}, {"producto": "Set 2 Masajeadoras Faciales de Microcorriente, Dispositivo de Estiramiento Facial de Microcorriente color blanco", "categoria": "Dispositivos de belleza facial", "pedidos": 28, "unidades": 32, "precio": 200.0, "ingreso": 1479.0, "completado": 21, "enviado": 0, "cancelado": 7, "cancel_pct": 25.0, "envio_paga": 15, "envio_gratis": 13}, {"producto": "Set 2 Masajeadoras Faciales de Microcorriente, Dispositivo de Estiramiento Facial de Microcorriente", "categoria": "Dispositivos de belleza facial", "pedidos": 9, "unidades": 10, "precio": 200.0, "ingreso": 576.0, "completado": 7, "enviado": 0, "cancelado": 2, "cancel_pct": 22.0, "envio_paga": 4, "envio_gratis": 5}, {"producto": "Kit masajeadora multifuncional y mascara led", "categoria": "Dispositivos de belleza facial", "pedidos": 1, "unidades": 1, "precio": 632.0, "ingreso": 394.0, "completado": 0, "enviado": 1, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}, {"producto": "Cepillo Facial Vibratorio Recargable Con Intensidades Ajustables", "categoria": "Dispositivos de belleza facial", "pedidos": 4, "unidades": 4, "precio": 0.0, "ingreso": 0.0, "completado": 4, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 4}]}, {"categoria": "Suministros de arte", "pedidos": 65, "unidades": 69, "ingreso": 17012.0, "n_prod": 1, "productos": [{"producto": "Set de 100 Colores Plumones/Doble Punta Pencil /Marcadores A Base De Agua No Toxico", "categoria": "Suministros de arte", "pedidos": 65, "unidades": 69, "precio": 262.0, "ingreso": 17012.0, "completado": 43, "enviado": 0, "cancelado": 22, "cancel_pct": 34.0, "envio_paga": 2, "envio_gratis": 63}]}, {"categoria": "Bolsos cruzados y de hombro para mujer", "pedidos": 95, "unidades": 126, "ingreso": 10861.0, "n_prod": 5, "productos": [{"producto": "Bolsa pequeña tipo bandolera", "categoria": "Bolsos cruzados y de hombro para mujer", "pedidos": 57, "unidades": 74, "precio": 399.0, "ingreso": 5526.0, "completado": 45, "enviado": 0, "cancelado": 12, "cancel_pct": 21.0, "envio_paga": 2, "envio_gratis": 55}, {"producto": "Bolsa Bandolera para Mujer Elegante y Moderna de Uso Diario", "categoria": "Bolsos cruzados y de hombro para mujer", "pedidos": 20, "unidades": 27, "precio": 320.0, "ingreso": 2428.0, "completado": 16, "enviado": 0, "cancelado": 4, "cancel_pct": 20.0, "envio_paga": 2, "envio_gratis": 18}, {"producto": "Elegante Bolso Cruzado De Piel Sintética PU Con Cadena Y Cartera", "categoria": "Bolsos cruzados y de hombro para mujer", "pedidos": 10, "unidades": 16, "precio": 399.0, "ingreso": 1896.0, "completado": 5, "enviado": 0, "cancelado": 5, "cancel_pct": 50.0, "envio_paga": 0, "envio_gratis": 10}, {"producto": "Bolsa Crossbody Mujer Casual Formal Con Bolsillos Internos", "categoria": "Bolsos cruzados y de hombro para mujer", "pedidos": 6, "unidades": 7, "precio": 700.0, "ingreso": 729.0, "completado": 4, "enviado": 0, "cancelado": 2, "cancel_pct": 33.0, "envio_paga": 0, "envio_gratis": 6}, {"producto": "Bolso Crossbody De Cuero Sintético Negro Onda Shop Para Mujer", "categoria": "Bolsos cruzados y de hombro para mujer", "pedidos": 2, "unidades": 2, "precio": 369.0, "ingreso": 282.0, "completado": 1, "enviado": 0, "cancelado": 1, "cancel_pct": 50.0, "envio_paga": 0, "envio_gratis": 2}]}, {"categoria": "Carteras para hombre", "pedidos": 80, "unidades": 153, "ingreso": 10800.0, "n_prod": 5, "productos": [{"producto": "Cartera para hombre con diseño elegante y funcional", "categoria": "Carteras para hombre", "pedidos": 47, "unidades": 112, "precio": 229.0, "ingreso": 7647.0, "completado": 36, "enviado": 0, "cancelado": 11, "cancel_pct": 23.0, "envio_paga": 17, "envio_gratis": 30}, {"producto": "Cartera Para Hombre De Cuero PU Contraste", "categoria": "Carteras para hombre", "pedidos": 12, "unidades": 16, "precio": 149.0, "ingreso": 1094.0, "completado": 11, "enviado": 0, "cancelado": 1, "cancel_pct": 8.0, "envio_paga": 0, "envio_gratis": 12}, {"producto": "Cartera Plegable Vintage de Cuero PU con Cremallera y Bloqueo RFID", "categoria": "Carteras para hombre", "pedidos": 11, "unidades": 12, "precio": 549.0, "ingreso": 867.0, "completado": 9, "enviado": 0, "cancelado": 2, "cancel_pct": 18.0, "envio_paga": 1, "envio_gratis": 10}, {"producto": "Cartera Compacta para Hombre de 5 Ranuras Horizontal", "categoria": "Carteras para hombre", "pedidos": 6, "unidades": 7, "precio": 149.0, "ingreso": 668.0, "completado": 4, "enviado": 0, "cancelado": 2, "cancel_pct": 33.0, "envio_paga": 2, "envio_gratis": 4}, {"producto": "Cartera Compacta con Cierre Perimetral y 5 Ranuras", "categoria": "Carteras para hombre", "pedidos": 4, "unidades": 6, "precio": 149.0, "ingreso": 524.0, "completado": 3, "enviado": 0, "cancelado": 1, "cancel_pct": 25.0, "envio_paga": 0, "envio_gratis": 4}]}, {"categoria": "Lavaderos", "pedidos": 31, "unidades": 31, "ingreso": 9350.0, "n_prod": 1, "productos": [{"producto": "Mini Lavadora Portátil Plegable con Centrifugado", "categoria": "Lavaderos", "pedidos": 31, "unidades": 31, "precio": 899.0, "ingreso": 9350.0, "completado": 21, "enviado": 0, "cancelado": 10, "cancel_pct": 32.0, "envio_paga": 3, "envio_gratis": 28}]}, {"categoria": "Iluminación y lámparas", "pedidos": 90, "unidades": 139, "ingreso": 8828.0, "n_prod": 1, "productos": [{"producto": "Lámpara Frontal Recargable USB para Trabajos y Excursiones", "categoria": "Iluminación y lámparas", "pedidos": 90, "unidades": 139, "precio": 120.0, "ingreso": 8828.0, "completado": 56, "enviado": 3, "cancelado": 31, "cancel_pct": 34.0, "envio_paga": 25, "envio_gratis": 65}]}, {"categoria": "Maletines y cajas de herramientas", "pedidos": 56, "unidades": 61, "ingreso": 8747.0, "n_prod": 1, "productos": [{"producto": "Caja De Herramientas Compacta De 27 Piezas Con Linterna LED", "categoria": "Maletines y cajas de herramientas", "pedidos": 56, "unidades": 61, "precio": 199.0, "ingreso": 8747.0, "completado": 35, "enviado": 0, "cancelado": 21, "cancel_pct": 38.0, "envio_paga": 10, "envio_gratis": 46}]}, {"categoria": "Limpiadores para el hogar", "pedidos": 190, "unidades": 233, "ingreso": 7572.0, "n_prod": 5, "productos": [{"producto": "Detergente Líquido Axolo Clean 750 ML Limón Y Té Verde", "categoria": "Limpiadores para el hogar", "pedidos": 115, "unidades": 152, "precio": 56.0, "ingreso": 4583.0, "completado": 0, "enviado": 95, "cancelado": 18, "cancel_pct": 16.0, "envio_paga": 21, "envio_gratis": 94}, {"producto": "Axolo Clean pack de 3 Detergente Líquido 750 ml Limón Y Té Verde", "categoria": "Limpiadores para el hogar", "pedidos": 17, "unidades": 22, "precio": 123.0, "ingreso": 1989.0, "completado": 13, "enviado": 2, "cancelado": 2, "cancel_pct": 12.0, "envio_paga": 0, "envio_gratis": 17}, {"producto": "Axolo Clean – Lavatrastes Líquido 4L Espuma Suprema", "categoria": "Limpiadores para el hogar", "pedidos": 3, "unidades": 3, "precio": 325.0, "ingreso": 499.0, "completado": 3, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 2, "envio_gratis": 1}, {"producto": "Axolo Clean Pack de 3 Detergente Líquido 750 ML Limón Y Té Verde. Aroma Que Enamora Alto Rendimiento Concentrado Suave Con Tus Manos", "categoria": "Limpiadores para el hogar", "pedidos": 3, "unidades": 3, "precio": 169.0, "ingreso": 376.0, "completado": 0, "enviado": 3, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 3}, {"producto": "Detergente Líquido Axolo Clean 750 ml Limón Y Té Verde", "categoria": "Limpiadores para el hogar", "pedidos": 52, "unidades": 53, "precio": 0.0, "ingreso": 125.0, "completado": 8, "enviado": 42, "cancelado": 2, "cancel_pct": 4.0, "envio_paga": 0, "envio_gratis": 52}]}, {"categoria": "Tazones", "pedidos": 21, "unidades": 21, "ingreso": 5502.0, "n_prod": 1, "productos": [{"producto": "Vajilla De Trigo De 37 Piezas Color Negro", "categoria": "Tazones", "pedidos": 21, "unidades": 21, "precio": 269.0, "ingreso": 5502.0, "completado": 19, "enviado": 0, "cancelado": 2, "cancel_pct": 10.0, "envio_paga": 1, "envio_gratis": 20}]}, {"categoria": "Juguetes de broma y de fantasía", "pedidos": 52, "unidades": 53, "ingreso": 5209.0, "n_prod": 2, "productos": [{"producto": "Mini Máquina De Garra Con Tema De Dinosaurio Para Niños", "categoria": "Juguetes de broma y de fantasía", "pedidos": 26, "unidades": 26, "precio": 150.0, "ingreso": 2708.0, "completado": 7, "enviado": 13, "cancelado": 6, "cancel_pct": 23.0, "envio_paga": 3, "envio_gratis": 23}, {"producto": "Mini Máquina De Garras De Pato Para Niños Juguete Educativo Amarillo con Diseño Divertido y Seguro para Niños pequeños", "categoria": "Juguetes de broma y de fantasía", "pedidos": 26, "unidades": 27, "precio": 150.0, "ingreso": 2501.0, "completado": 6, "enviado": 12, "cancelado": 8, "cancel_pct": 31.0, "envio_paga": 5, "envio_gratis": 21}]}, {"categoria": "Secadoras de cabello", "pedidos": 12, "unidades": 12, "ingreso": 4351.0, "n_prod": 1, "productos": [{"producto": "Set Alaciadora Secadora Likepink Multi 6 Piezas", "categoria": "Secadoras de cabello", "pedidos": 12, "unidades": 12, "precio": 735.0, "ingreso": 4351.0, "completado": 1, "enviado": 7, "cancelado": 3, "cancel_pct": 25.0, "envio_paga": 0, "envio_gratis": 12}]}, {"categoria": "Ventiladores USB y móviles", "pedidos": 47, "unidades": 56, "ingreso": 3809.0, "n_prod": 1, "productos": [{"producto": "Ventilador Minimalista De Escritorio Sin Aspas USB Blanco", "categoria": "Ventiladores USB y móviles", "pedidos": 47, "unidades": 56, "precio": 200.0, "ingreso": 3809.0, "completado": 31, "enviado": 6, "cancelado": 10, "cancel_pct": 21.0, "envio_paga": 10, "envio_gratis": 37}]}, {"categoria": "Teclados y pianos", "pedidos": 3, "unidades": 3, "ingreso": 3548.0, "n_prod": 1, "productos": [{"producto": "Sintetizador inalambrico", "categoria": "Teclados y pianos", "pedidos": 3, "unidades": 3, "precio": 2222.0, "ingreso": 3548.0, "completado": 1, "enviado": 0, "cancelado": 2, "cancel_pct": 67.0, "envio_paga": 1, "envio_gratis": 2}]}, {"categoria": "Muñecos de peluche", "pedidos": 9, "unidades": 12, "ingreso": 3403.0, "n_prod": 1, "productos": [{"producto": "Colección Exclusiva de Peluches de Colección Tralalero Tralala", "categoria": "Muñecos de peluche", "pedidos": 9, "unidades": 12, "precio": 850.0, "ingreso": 3403.0, "completado": 5, "enviado": 0, "cancelado": 4, "cancel_pct": 44.0, "envio_paga": 1, "envio_gratis": 8}]}, {"categoria": "Decoraciones festivas", "pedidos": 12, "unidades": 12, "ingreso": 2140.0, "n_prod": 1, "productos": [{"producto": "Árbol De Navidad Irregular \"Ugly Tree\" Para Decoración Única", "categoria": "Decoraciones festivas", "pedidos": 12, "unidades": 12, "precio": 299.0, "ingreso": 2140.0, "completado": 9, "enviado": 0, "cancelado": 3, "cancel_pct": 25.0, "envio_paga": 10, "envio_gratis": 2}]}, {"categoria": "Teclados y mouse", "pedidos": 9, "unidades": 11, "ingreso": 1420.0, "n_prod": 2, "productos": [{"producto": "Ratón Vertical Ergonómico Inalámbrico Recargable Negro 2.4G", "categoria": "Teclados y mouse", "pedidos": 7, "unidades": 9, "precio": 320.0, "ingreso": 1210.0, "completado": 3, "enviado": 0, "cancelado": 4, "cancel_pct": 57.0, "envio_paga": 1, "envio_gratis": 6}, {"producto": "Ratón Vertical Ergonómico Inalámbrico Negro 2.4G", "categoria": "Teclados y mouse", "pedidos": 2, "unidades": 2, "precio": 320.0, "ingreso": 210.0, "completado": 1, "enviado": 0, "cancelado": 1, "cancel_pct": 50.0, "envio_paga": 0, "envio_gratis": 2}]}, {"categoria": "Juegos de herramientas eléctricas", "pedidos": 11, "unidades": 11, "ingreso": 1402.0, "n_prod": 1, "productos": [{"producto": "Mini Destornillador Eléctrico Plegable Recargable USB 3.6V", "categoria": "Juegos de herramientas eléctricas", "pedidos": 11, "unidades": 11, "precio": 175.0, "ingreso": 1402.0, "completado": 7, "enviado": 0, "cancelado": 4, "cancel_pct": 36.0, "envio_paga": 2, "envio_gratis": 9}]}, {"categoria": "Bolsas tote para mujer", "pedidos": 9, "unidades": 9, "ingreso": 1237.0, "n_prod": 1, "productos": [{"producto": "Bolso de Dama en Piel Sintética con Correa Ajustable", "categoria": "Bolsas tote para mujer", "pedidos": 9, "unidades": 9, "precio": 299.0, "ingreso": 1237.0, "completado": 2, "enviado": 0, "cancelado": 7, "cancel_pct": 78.0, "envio_paga": 9, "envio_gratis": 0}]}, {"categoria": "Micrófonos", "pedidos": 4, "unidades": 4, "ingreso": 1164.0, "n_prod": 1, "productos": [{"producto": "Micrófono USB Condensador Profesional Para Grabación Y Streaming", "categoria": "Micrófonos", "pedidos": 4, "unidades": 4, "precio": 590.0, "ingreso": 1164.0, "completado": 3, "enviado": 0, "cancelado": 1, "cancel_pct": 25.0, "envio_paga": 0, "envio_gratis": 4}]}, {"categoria": "Juegos de utensilios de cocina", "pedidos": 2, "unidades": 2, "ingreso": 996.0, "n_prod": 1, "productos": [{"producto": "Juego de Cocina Premium de 19 Piezas con Cuchillos de Acero y Silicona", "categoria": "Juegos de utensilios de cocina", "pedidos": 2, "unidades": 2, "precio": 699.0, "ingreso": 996.0, "completado": 0, "enviado": 0, "cancelado": 2, "cancel_pct": 100.0, "envio_paga": 0, "envio_gratis": 2}]}, {"categoria": "Velas", "pedidos": 7, "unidades": 8, "ingreso": 986.0, "n_prod": 2, "productos": [{"producto": "Vela Aromática Rosetta De Cera De Soya Con Doble Pabilo Color Salmón", "categoria": "Velas", "pedidos": 6, "unidades": 7, "precio": 599.0, "ingreso": 986.0, "completado": 0, "enviado": 6, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 6}, {"producto": "Vela Aromática Kikimood Ylang Ylang Y Bergamota Con Doble Pabilo", "categoria": "Velas", "pedidos": 1, "unidades": 1, "precio": 0.0, "ingreso": 0.0, "completado": 0, "enviado": 1, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}]}, {"categoria": "Herramientas para el cuidado de la piel", "pedidos": 3, "unidades": 3, "ingreso": 775.0, "n_prod": 2, "productos": [{"producto": "Masajeador Facial Multifuncional 5 En 1 Recargable Con Luz LED", "categoria": "Herramientas para el cuidado de la piel", "pedidos": 2, "unidades": 2, "precio": 346.0, "ingreso": 426.0, "completado": 0, "enviado": 1, "cancelado": 1, "cancel_pct": 50.0, "envio_paga": 0, "envio_gratis": 2}, {"producto": "Set De 7 Herramientas Gua Sha De Resina Natural Para Masaje Facial", "categoria": "Herramientas para el cuidado de la piel", "pedidos": 1, "unidades": 1, "precio": 349.0, "ingreso": 349.0, "completado": 1, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 1, "envio_gratis": 0}]}, {"categoria": "Bocinas", "pedidos": 2, "unidades": 3, "ingreso": 502.0, "n_prod": 1, "productos": [{"producto": "Mini bocina inalámbrica con sistema de karaoke", "categoria": "Bocinas", "pedidos": 2, "unidades": 3, "precio": 352.0, "ingreso": 502.0, "completado": 2, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 1, "envio_gratis": 1}]}, {"categoria": "Cepillos y peines para el cabello", "pedidos": 6, "unidades": 6, "ingreso": 452.0, "n_prod": 1, "productos": [{"producto": "Peine eléctrico para cabello multifuncional", "categoria": "Cepillos y peines para el cabello", "pedidos": 6, "unidades": 6, "precio": 231.0, "ingreso": 452.0, "completado": 3, "enviado": 0, "cancelado": 3, "cancel_pct": 50.0, "envio_paga": 1, "envio_gratis": 5}]}, {"categoria": "Juguetes para aliviar el estrés", "pedidos": 7, "unidades": 7, "ingreso": 399.0, "n_prod": 3, "productos": [{"producto": "Juguete Antiestrés Squishy de Paleta", "categoria": "Juguetes para aliviar el estrés", "pedidos": 3, "unidades": 3, "precio": 152.0, "ingreso": 243.0, "completado": 0, "enviado": 2, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 3}, {"producto": "Juguete Antiestrés Squishy Helado", "categoria": "Juguetes para aliviar el estrés", "pedidos": 1, "unidades": 1, "precio": 152.0, "ingreso": 80.0, "completado": 0, "enviado": 1, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}, {"producto": "squishy Antiestrés Rebanada De Pizza", "categoria": "Juguetes para aliviar el estrés", "pedidos": 3, "unidades": 3, "precio": 0.0, "ingreso": 76.0, "completado": 0, "enviado": 3, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 3}]}, {"categoria": "Artículos de baño", "pedidos": 3, "unidades": 4, "ingreso": 349.0, "n_prod": 1, "productos": [{"producto": "Colgador gancho de Toallas de Baño para Cancel - Set de 2 piezas -  Diseño exclusivo acanalado", "categoria": "Artículos de baño", "pedidos": 3, "unidades": 4, "precio": 99.0, "ingreso": 349.0, "completado": 0, "enviado": 0, "cancelado": 1, "cancel_pct": 33.0, "envio_paga": 2, "envio_gratis": 1}]}, {"categoria": "Rizadores y alisadores", "pedidos": 3, "unidades": 3, "ingreso": 312.0, "n_prod": 1, "productos": [{"producto": "Alaciadora Profesional Con Placas De Cerámica E Iones", "categoria": "Rizadores y alisadores", "pedidos": 3, "unidades": 3, "precio": 610.0, "ingreso": 312.0, "completado": 2, "enviado": 0, "cancelado": 1, "cancel_pct": 33.0, "envio_paga": 0, "envio_gratis": 3}]}, {"categoria": "Taladros eléctricos", "pedidos": 4, "unidades": 4, "ingreso": 297.0, "n_prod": 2, "productos": [{"producto": "Kit de taladro atornillador inalámbrico T2 de 18 V", "categoria": "Taladros eléctricos", "pedidos": 1, "unidades": 1, "precio": 659.0, "ingreso": 297.0, "completado": 1, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}, {"producto": "Kit de Taladro Atornillador Inalámbrico T1 de 18 V", "categoria": "Taladros eléctricos", "pedidos": 3, "unidades": 3, "precio": 0.0, "ingreso": 0.0, "completado": 3, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 3}]}, {"categoria": "Utensilios de cocina", "pedidos": 2, "unidades": 2, "ingreso": 285.0, "n_prod": 1, "productos": [{"producto": "Set De Utensilios De Cocina De Silicona Con Mango De Madera 11 Piezas", "categoria": "Utensilios de cocina", "pedidos": 2, "unidades": 2, "precio": 449.0, "ingreso": 285.0, "completado": 0, "enviado": 0, "cancelado": 2, "cancel_pct": 100.0, "envio_paga": 0, "envio_gratis": 2}]}, {"categoria": "Brochas para maquillaje", "pedidos": 2, "unidades": 2, "ingreso": 280.0, "n_prod": 1, "productos": [{"producto": "Juego De 20 Brochas De Maquillaje Profesional Con Estuche Rosa", "categoria": "Brochas para maquillaje", "pedidos": 2, "unidades": 2, "precio": 165.0, "ingreso": 280.0, "completado": 2, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 2}]}, {"categoria": "Carpas y accesorios", "pedidos": 1, "unidades": 1, "ingreso": 250.0, "n_prod": 1, "productos": [{"producto": "Tienda De Campaña Iglú Camuflaje 2 Personas", "categoria": "Carpas y accesorios", "pedidos": 1, "unidades": 1, "precio": 250.0, "ingreso": 250.0, "completado": 1, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 1, "envio_gratis": 0}]}, {"categoria": "Cinturones", "pedidos": 1, "unidades": 1, "ingreso": 240.0, "n_prod": 1, "productos": [{"producto": "Cinturón Casual Formal Para Hombre En Cuero PU", "categoria": "Cinturones", "pedidos": 1, "unidades": 1, "precio": 480.0, "ingreso": 240.0, "completado": 1, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}]}, {"categoria": "Power Banks", "pedidos": 1, "unidades": 1, "ingreso": 212.0, "n_prod": 1, "productos": [{"producto": "Batería Externa Portátil De Bolsillo Para iPhone Y Android Dos En Uno", "categoria": "Power Banks", "pedidos": 1, "unidades": 1, "precio": 350.0, "ingreso": 212.0, "completado": 0, "enviado": 0, "cancelado": 1, "cancel_pct": 100.0, "envio_paga": 0, "envio_gratis": 1}]}, {"categoria": "Juguetes para alberca, agua y arena", "pedidos": 8, "unidades": 8, "ingreso": 189.0, "n_prod": 2, "productos": [{"producto": "Porta vasos inflable de Flamenco color Rosa", "categoria": "Juguetes para alberca, agua y arena", "pedidos": 7, "unidades": 7, "precio": 35.0, "ingreso": 189.0, "completado": 0, "enviado": 4, "cancelado": 1, "cancel_pct": 14.0, "envio_paga": 4, "envio_gratis": 3}, {"producto": "Hielera Inflable Con Forma De Palmera Tropical Para Fiestas", "categoria": "Juguetes para alberca, agua y arena", "pedidos": 1, "unidades": 1, "precio": 0.0, "ingreso": 0.0, "completado": 0, "enviado": 1, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 1}]}, {"categoria": "Organizadores y accesorios de escritorio", "pedidos": 2, "unidades": 2, "ingreso": 178.0, "n_prod": 1, "productos": [{"producto": "Porta Plumas de Paleta Derretida - Soporte Kawaii para Escritorio (Rojo, Azul y Rosa) INCLUYE PLUMA", "categoria": "Organizadores y accesorios de escritorio", "pedidos": 2, "unidades": 2, "precio": 98.0, "ingreso": 178.0, "completado": 0, "enviado": 2, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 2}]}, {"categoria": "Cables, cargadores y adaptadores", "pedidos": 3, "unidades": 3, "ingreso": 147.0, "n_prod": 1, "productos": [{"producto": "Cargador Rápido De Pared 20W con Cable Tipo C a Lightning", "categoria": "Cables, cargadores y adaptadores", "pedidos": 3, "unidades": 3, "precio": 149.0, "ingreso": 147.0, "completado": 3, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 3}]}, {"categoria": "Dispositivos de masaje", "pedidos": 4, "unidades": 4, "ingreso": 110.0, "n_prod": 1, "productos": [{"producto": "Pistola De Masaje Mini", "categoria": "Dispositivos de masaje", "pedidos": 4, "unidades": 4, "precio": 0.0, "ingreso": 110.0, "completado": 4, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 4}]}, {"categoria": "Ventiladores", "pedidos": 6, "unidades": 6, "ingreso": 107.0, "n_prod": 1, "productos": [{"producto": "Ventilador Portátil Recargable Forma Huella De Gato Con Rosa", "categoria": "Ventiladores", "pedidos": 6, "unidades": 6, "precio": 0.0, "ingreso": 107.0, "completado": 6, "enviado": 0, "cancelado": 0, "cancel_pct": 0.0, "envio_paga": 0, "envio_gratis": 6}]}, {"categoria": "Auriculares, audífonos y accesorios", "pedidos": 1, "unidades": 1, "ingreso": 0.0, "n_prod": 1, "productos": [{"producto": "Audífonos Bluetooth Gato Diadema Arcoíris con Luz RGB", "categoria": "Auriculares, audífonos y accesorios", "pedidos": 1, "unidades": 1, "precio": 0.0, "ingreso": 0.0, "completado": 0, "enviado": 0, "cancelado": 1, "cancel_pct": 100.0, "envio_paga": 0, "envio_gratis": 1}]}];
+let dLevel='cats', dCat=null, dProd=null, dSort={k:'ingreso',dir:-1};
+const dv=document.getElementById('drillView'), crumbs=document.getElementById('crumbs'),
+      dSearch=document.getElementById('drillSearch'), dCount=document.getElementById('drillCount'),
+      dEmpty=document.getElementById('drillEmpty'), dSub=document.getElementById('explorerSub');
+
+const m=v=>'$'+Number(v).toLocaleString('es-MX');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function statusBar(p){const t=p.completado+p.enviado+p.cancelado||1;const w=x=>Math.max(2,Math.round(x/t*110));
+  return `<div class="bars" title="Completado ${p.completado} · Enviado ${p.enviado} · Cancelado ${p.cancelado}"><span class="c" style="width:${w(p.completado)}px"></span><span class="e" style="width:${w(p.enviado)}px"></span><span class="x" style="width:${w(p.cancelado)}px"></span></div>`;}
+function shipC(p){const t=p.envio_paga+p.envio_gratis||1;const g=Math.round(p.envio_gratis/t*100);return `<span class="shipcell"><span class="free">${g}%</span> gratis · <span class="paid">${100-g}%</span> paga</span>`;}
+
+function setCrumbs(){
+  let h='<a data-nav="cats">Todas las categorías</a>';
+  if(dCat){h+=' <span class="sep">/</span> <a data-nav="cat">'+esc(dCat.categoria)+'</a>';}
+  if(dProd){h+=' <span class="sep">/</span> <span>'+esc(dProd.producto.length>45?dProd.producto.slice(0,45)+'…':dProd.producto)+'</span>';}
+  crumbs.innerHTML=h;
+  crumbs.querySelectorAll('a').forEach(a=>a.onclick=()=>{const n=a.dataset.nav;if(n==='cats'){dCat=null;dProd=null;dLevel='cats';}else if(n==='cat'){dProd=null;dLevel='cat';}render();});
+}
+function sortRows(rows){const {k,dir}=dSort;return rows.slice().sort((a,b)=>{let x=a[k],y=b[k];if(typeof x==='string'){x=x.toLowerCase();y=y.toLowerCase();return x<y?-dir:x>y?dir:0;}return (x-y)*dir;});}
+function th(k,label,cls=''){const s=dSort.k===k?'sorted':'';const ar=dSort.k===k?(dSort.dir>0?'↑':'↓'):'↕';return `<th class="${cls} ${s}" data-k="${k}">${label} <span class="arrow">${ar}</span></th>`;}
+function bindSort(scope){dv.querySelectorAll('th[data-k]').forEach(t=>t.onclick=()=>{const k=t.dataset.k;if(k===dSort.k)dSort.dir*=-1;else{dSort.k=k;dSort.dir=(k==='categoria'||k==='producto')?1:-1;}render();});}
+
+function render(){
+  const q=dSearch.value.toLowerCase().trim();
+  setCrumbs();
+  // NIVEL CATEGORÍAS
+  if(dLevel==='cats'){
+    dSub.textContent='Haz clic en una categoría para ver sus productos.';
+    let rows=CATS.filter(c=>!q||c.categoria.toLowerCase().includes(q)||c.productos.some(p=>p.producto.toLowerCase().includes(q)));
+    rows=sortRows(rows);
+    dv.innerHTML=`<table class="drill-table"><thead><tr>
+      ${th('categoria','Categoría')}${th('n_prod','Productos','num')}${th('pedidos','Pedidos','num')}${th('unidades','Unid.','num')}${th('ingreso','Ingreso','num')}
+    </tr></thead><tbody>${rows.map(c=>`<tr class="clickable" data-cat="${esc(c.categoria)}">
+      <td class="cname"><span class="catpill">${esc(c.categoria)}</span><span class="chev">›</span></td>
+      <td class="num">${c.n_prod}</td><td class="num">${c.pedidos.toLocaleString('es-MX')}</td>
+      <td class="num">${c.unidades.toLocaleString('es-MX')}</td><td class="num money">${m(c.ingreso)}</td>
+    </tr>`).join('')}</tbody></table>`;
+    dv.querySelectorAll('tr[data-cat]').forEach(r=>r.onclick=()=>{dCat=CATS.find(c=>c.categoria===r.dataset.cat);dLevel='cat';dSort={k:'ingreso',dir:-1};render();});
+    dCount.textContent=rows.length+' categorías';
+    dEmpty.style.display=rows.length?'none':'block';
+  }
+  // NIVEL PRODUCTOS (dentro de categoría)
+  else if(dLevel==='cat'){
+    dSub.textContent='Productos en «'+dCat.categoria+'». Haz clic en uno para ver su detalle.';
+    let rows=dCat.productos.filter(p=>!q||p.producto.toLowerCase().includes(q));
+    rows=sortRows(rows);
+    dv.innerHTML=`<button class="backbtn" id="dback">‹ Volver a categorías</button>
+    <table class="drill-table"><thead><tr>
+      ${th('producto','Producto')}${th('pedidos','Pedidos','num')}${th('unidades','Unid.','num')}${th('precio','Precio','num')}${th('ingreso','Ingreso','num')}
+    </tr></thead><tbody>${rows.map(p=>`<tr class="clickable" data-prod="${esc(p.producto)}">
+      <td class="cname">${esc(p.producto)}<span class="chev">›</span></td>
+      <td class="num">${p.pedidos.toLocaleString('es-MX')}</td><td class="num">${p.unidades.toLocaleString('es-MX')}</td>
+      <td class="num">${m(p.precio)}</td><td class="num money">${m(p.ingreso)}</td>
+    </tr>`).join('')}</tbody></table>`;
+    document.getElementById('dback').onclick=()=>{dCat=null;dLevel='cats';render();};
+    dv.querySelectorAll('tr[data-prod]').forEach(r=>r.onclick=()=>{dProd=dCat.productos.find(p=>p.producto===r.dataset.prod);dLevel='prod';render();});
+    dCount.textContent=rows.length+' productos';
+    dEmpty.style.display=rows.length?'none':'block';
+  }
+  // NIVEL DETALLE (producto)
+  else if(dLevel==='prod'){
+    const p=dProd; dSub.textContent='Detalle del producto.';
+    const t=p.completado+p.enviado+p.cancelado||1;
+    dv.innerHTML=`<button class="backbtn" id="dback">‹ Volver a ${esc(dCat.categoria)}</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="kpi"><div class="lbl">Ingreso</div><div class="val">${m(p.ingreso)}</div><div class="foot">Precio unitario ${m(p.precio)}</div></div>
+      <div class="kpi"><div class="lbl">Pedidos · Unidades</div><div class="val">${p.pedidos} · ${p.unidades}</div><div class="foot">${esc(p.categoria)}</div></div>
+      <div class="kpi ${p.cancel_pct>=40?'':''}"><div class="lbl">Cancelación</div><div class="val" style="color:${p.cancel_pct>=40?'var(--accent)':'inherit'}">${p.cancel_pct}%</div><div class="foot">${p.cancelado} de ${p.pedidos} pedidos</div></div>
+      <div class="kpi"><div class="lbl">Envío</div><div class="val">${Math.round(p.envio_gratis/(p.envio_paga+p.envio_gratis||1)*100)}%</div><div class="foot">gratis para el cliente</div></div>
+    </div>
+    <div class="panel" style="margin-top:16px;box-shadow:none;border:1px solid var(--line)">
+      <h3 style="font-size:14px">Estatus de las órdenes</h3>
+      <table class="drill-table" style="margin-top:10px"><tbody>
+        <tr><td>✅ Completado</td><td class="num">${p.completado}</td><td class="num">${Math.round(p.completado/t*100)}%</td></tr>
+        <tr><td>🚚 Enviado</td><td class="num">${p.enviado}</td><td class="num">${Math.round(p.enviado/t*100)}%</td></tr>
+        <tr><td>❌ Cancelado</td><td class="num">${p.cancelado}</td><td class="num">${Math.round(p.cancelado/t*100)}%</td></tr>
+      </tbody></table>
+    </div>`;
+    document.getElementById('dback').onclick=()=>{dProd=null;dLevel='cat';render();};
+    dCount.textContent='';
+    dEmpty.style.display='none';
+  }
+  bindSort();
+}
+dSearch.addEventListener('input',()=>{if(dLevel==='prod'){dProd=null;dLevel=dCat?'cat':'cats';}render();});
+render();
+
+</script>
+</body>
+</html>
