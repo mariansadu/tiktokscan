@@ -173,6 +173,72 @@
   .dmonto{white-space:nowrap}
   .num{text-align:right;font-family:'JetBrains Mono';font-weight:500}
   @media(max-width:560px){.alertcard{flex-wrap:wrap}.modal-stats{gap:16px}}
+  /* Tarjeta y modal del Plan de Acción */
+  .plancard{display:flex;align-items:center;gap:18px;margin-top:16px;background:linear-gradient(135deg,#1A1A1A,#2a1a10);border:1px solid rgba(224,67,0,.4);border-left:4px solid var(--gold);border-radius:14px;padding:22px;cursor:pointer;transition:transform .12s,box-shadow .12s;color:#fff}
+  .plancard:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(224,67,0,.25)}
+  .plancard .ic{font-size:30px;flex-shrink:0}
+  .plancard .body{flex:1}
+  .plancard .body h3{font-family:'Oswald';font-size:19px;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.01em;color:#fff}
+  .plancard .body p{font-size:13.5px;color:#C9BEB0;line-height:1.45}
+  .plancard .cta{font-family:'JetBrains Mono';font-size:12px;font-weight:700;color:var(--gold);white-space:nowrap;display:flex;align-items:center;gap:6px}
+  .plan-modal{background:var(--paper);border-radius:16px;max-width:960px;width:100%;max-height:90vh;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4);display:flex;flex-direction:column}
+  .plan-head{padding:26px 30px;background:linear-gradient(135deg,#E14300,#E01C00);color:#fff;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  .plan-head h2{font-family:'Oswald';font-size:26px;font-weight:700;text-transform:uppercase;letter-spacing:.01em;line-height:1.05}
+  .plan-head p{font-size:13px;color:#FFE0D0;margin-top:6px;max-width:640px}
+  .plan-close{background:rgba(255,255,255,.15);border:none;border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer;color:#fff;flex-shrink:0;line-height:1}
+  .plan-close:hover{background:rgba(255,255,255,.28)}
+  .plan-body{overflow-y:auto;padding:28px 30px 36px}
+  .plan-sec{margin-bottom:34px}
+  .plan-sec>h3{font-family:'Oswald';font-size:19px;font-weight:600;text-transform:uppercase;letter-spacing:.01em;color:var(--ink);display:flex;align-items:center;gap:10px;margin-bottom:6px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .plan-sec>h3 .badge{font-family:'JetBrains Mono';font-size:11px;background:var(--accent);color:#fff;border-radius:20px;padding:2px 10px;letter-spacing:.04em}
+  .plan-sec .intro{font-size:13.5px;color:var(--muted);margin:10px 0 16px;line-height:1.55}
+  .plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
+  .plan-kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+  .plan-kpi .k-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+  .plan-kpi .k-val{font-family:'Oswald';font-size:26px;font-weight:700;margin-top:6px;color:var(--accent)}
+  .plan-kpi .k-foot{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .ptable{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  .ptable th{background:#1A1A1A;color:#fff;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;font-weight:700}
+  .ptable th.num{text-align:right}
+  .ptable td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .ptable tbody tr:hover{background:rgba(224,67,0,.04)}
+  .ptable .num{text-align:right;font-family:'JetBrains Mono';font-weight:600}
+  .ptable .pmin{color:var(--accent);font-weight:700}
+  .ptable .ppiso{color:#B85400}
+  .rolechip{display:inline-block;font-size:10.5px;font-family:'JetBrains Mono';padding:2px 8px;border-radius:20px;background:rgba(224,107,0,.12);color:#B85400}
+  .hostgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
+  .hostcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+  .hostcard .hname{font-family:'Oswald';font-size:18px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .hostcard .hdot{width:10px;height:10px;border-radius:50%}
+  .hostcard .hrole{font-size:12px;color:var(--accent);font-weight:600;margin:4px 0 10px}
+  .hostcard ul{list-style:none;font-size:12.5px;color:var(--muted);line-height:1.6}
+  .hostcard li{padding-left:16px;position:relative}
+  .hostcard li:before{content:'▸';position:absolute;left:0;color:var(--accent)}
+  .parrilla{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+  .parrilla th,.parrilla td{border:1px solid var(--line);padding:9px 8px;text-align:center}
+  .parrilla th{background:#1A1A1A;color:#fff;font-family:'JetBrains Mono';font-size:11px;text-transform:uppercase}
+  .parrilla td{font-family:'JetBrains Mono';font-size:11.5px}
+  .parrilla .franja{background:var(--card);font-weight:700;color:var(--ink);text-align:left;padding-left:12px}
+  .p-jaq{background:rgba(225,67,0,.14);color:#B85400;font-weight:700}
+  .p-uri{background:rgba(14,120,140,.14);color:#0a7d8c;font-weight:700}
+  .p-lau{background:rgba(224,168,59,.18);color:#9a6f00;font-weight:700}
+  .p-off{color:#C9C9C9}
+  .p-all{background:#1A1A1A;color:#fff;font-weight:700}
+  .steplist{counter-reset:s;list-style:none;margin-top:12px}
+  .steplist li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.5}
+  .steplist li:before{content:counter(s);position:absolute;left:0;top:9px;width:30px;height:30px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Oswald';font-weight:700;font-size:15px}
+  .steplist li b{color:var(--ink)}
+  .callout{background:rgba(224,67,0,.06);border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;font-size:13.5px;color:var(--ink);line-height:1.55}
+  .callout.dark{background:#1A1A1A;color:#E8E8E8;border-left-color:var(--gold)}
+  .callout.dark b{color:var(--gold)}
+  .adsbox{background:linear-gradient(135deg,rgba(14,120,140,.08),rgba(224,67,0,.05));border:1px solid rgba(14,120,140,.25);border-radius:12px;padding:20px;margin-top:12px}
+  .adsbox h4{font-family:'Oswald';font-size:15px;font-weight:600;color:var(--ink);margin-bottom:8px}
+  .phase-row{display:flex;gap:12px;margin:14px 0;flex-wrap:wrap}
+  .phase{flex:1;min-width:180px;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:10px;padding:16px}
+  .phase .ph-t{font-family:'Oswald';font-size:14px;font-weight:600;color:var(--accent);text-transform:uppercase}
+  .phase .ph-meta{font-family:'Oswald';font-size:22px;font-weight:700;color:var(--ink);margin:6px 0}
+  .phase .ph-d{font-size:12px;color:var(--muted);line-height:1.5}
+  @media(max-width:720px){.plan-grid,.hostgrid{grid-template-columns:1fr 1fr}.plan-grid{grid-template-columns:1fr 1fr}.parrilla{font-size:10px}}
 </style>
 </head>
 <body>
@@ -190,8 +256,8 @@
       <div class="btag">Documento del equipo<b>FORO B</b></div>
     </div>
     <div class="eyebrow">Reporte interno · Solo datos 2026 · Enfocado al equipo Foro B</div>
-    <h1>Ventas &amp; Envíos<br>TikTok Shop</h1>
-    <p class="sub">Panorama general del historial de pedidos: desempeño de ventas, comportamiento de envíos y dónde se concentra la demanda. Documento de uso interno para el equipo de Foro B.</p>
+    <h1>Ventas &amp; Envíos<br>BIU SUPPLY · TikTok Shop</h1>
+    <p class="sub">Panorama general del historial de pedidos de nuestra tienda BIU SUPPLY: desempeño de ventas, comportamiento de envíos y dónde se concentra la demanda. Documento de uso interno para el equipo de Foro B.</p>
     <div style="margin:18px 0 6px">
       <span class="leadchip"><span class="dot"></span>Líder de Foro B: <b>S. Paula Reyes</b></span>
     </div>
@@ -234,6 +300,14 @@
       </div>
       <div class="cta">Ver detalle <span class="arrow">→</span></div>
     </div>
+    <div class="plancard" id="planCard" role="button" tabindex="0">
+      <div class="ic">🎯</div>
+      <div class="body">
+        <h3>Plan de acción · Estrategia LIVE para $100 mil diarios</h3>
+        <p>Ruta completa: parrilla de los 3 hosts (Jaqueline, Uriel y Laura), precios mínimos por producto, pauta con ads, apoyo de operadores TikTok y metas escalonadas.</p>
+      </div>
+      <div class="cta">Abrir plan <span class="arrow">→</span></div>
+    </div>
   </section>
 
   <section>
@@ -271,7 +345,7 @@
       <h3 style="font-family:'Oswald';font-size:16px;font-weight:600">¿Cuánto de cada descuento lo pone TikTok y cuánto tú?</h3>
       <p class="p-sub" style="font-size:13px;color:var(--muted);margin-top:4px">Sobre el subtotal de producto de pedidos no cancelados</p>
       <div class="note" style="background:rgba(224,107,0,.06);border-left-color:var(--accent2)">
-        Cuando un producto se vende con descuento, parte de esa rebaja la <b>absorbe TikTok</b> (te la reintegra) y parte la pones tú. El precio que ve el cliente <b>no</b> es tu ingreso real: a lo cobrado se le suma el subsidio de la plataforma.
+        Cuando un producto se vende con descuento, parte de esa rebaja la <b>absorbe TikTok</b> (nos la reintegra) y parte la ponemos nosotros. El precio que ve el cliente <b>no</b> es nuestro ingreso real: a lo cobrado se le suma el subsidio de la plataforma.
       </div>
       <div class="kpis" style="margin-top:18px">
         <div class="kpi hl">
@@ -286,7 +360,7 @@
           <div class="foot">descuento de producto que reintegra la plataforma</div>
         </div>
         <div class="kpi">
-          <div class="lbl">Descuentos aplicados por Foro B</div>
+          <div class="lbl">Descuentos aplicados por BIU SUPPLY</div>
           <div class="val">$215,069</div>
           <div style="display:inline-block;margin:6px 0 2px;background:rgba(224,67,0,.12);color:#B85400;border-radius:20px;padding:3px 12px;font-family:'Oswald';font-weight:700;font-size:15px;letter-spacing:.02em">46.4% del Precio Full</div>
           <div class="foot">descuento de vendedor sobre producto</div>
@@ -301,7 +375,7 @@
 
     <div class="panel" style="margin-top:20px">
       <h3>Ejemplo: Detergente Axolo Clean vendido a $28.80/unidad</h3>
-      <div class="p-sub">Desglose real de dónde sale ese precio y cuánto te acredita TikTok</div>
+      <div class="p-sub">Desglose real de dónde sale ese precio y cuánto nos acredita TikTok</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px">
         <div class="kpi">
           <div class="lbl">Precio que ve el cliente</div>
@@ -309,7 +383,7 @@
           <div class="foot">por unidad (precio de lista: $56.00)</div>
         </div>
         <div class="kpi hl">
-          <div class="lbl">Lo que TikTok te acredita</div>
+          <div class="lbl">Lo que TikTok nos acredita</div>
           <div class="val">$48.00</div>
           <div class="foot">$28.80 del cliente + $19.20 de subsidio TikTok</div>
         </div>
@@ -319,13 +393,13 @@
         <tbody>
           <tr><td>Precio Full (sin descuento)</td><td class="num money">$56.00</td><td style="color:var(--muted)">—</td></tr>
           <tr><td>(–) Descuento de plataforma</td><td class="num" style="color:var(--accent2)">–$19.20</td><td><span class="catpill">TikTok</span></td></tr>
-          <tr><td>(–) Descuento aplicado por Foro B</td><td class="num" style="color:var(--accent)">–$8.00</td><td><span class="catpill">Foro B</span></td></tr>
+          <tr><td>(–) Descuento aplicado por BIU SUPPLY</td><td class="num" style="color:var(--accent)">–$8.00</td><td><span class="catpill">BIU SUPPLY</span></td></tr>
           <tr style="border-top:2px solid var(--line)"><td><b>Precio final al cliente</b></td><td class="num money">$28.80</td><td style="color:var(--muted)">—</td></tr>
-          <tr style="background:rgba(224,107,0,.05)"><td><b>Ingreso real que te corresponde</b></td><td class="num money">$48.00</td><td style="color:var(--muted)">cliente + TikTok</td></tr>
+          <tr style="background:rgba(224,107,0,.05)"><td><b>Ingreso real que nos corresponde</b></td><td class="num money">$48.00</td><td style="color:var(--muted)">cliente + TikTok</td></tr>
         </tbody>
       </table>
       <div class="note" style="margin-top:16px">
-        En total, los <b>8 pedidos</b> a este precio (28 unidades) tuvieron un precio Full de <b>$1,568</b>. De la rebaja aplicada, <b>TikTok cubrió el 71%</b> ($538) y Foro B el resto ($224). El cliente pagó $806, pero tu ingreso real de producto fue <b>$1,344</b>.
+        En total, los <b>8 pedidos</b> a este precio (28 unidades) tuvieron un precio Full de <b>$1,568</b>. De la rebaja aplicada, <b>TikTok cubrió el 71%</b> ($538) y BIU SUPPLY el resto ($224). El cliente pagó $806, pero tu ingreso real de producto fue <b>$1,344</b>.
       </div>
       <div class="note" style="margin-top:12px;background:rgba(224,27,0,.06);border-left-color:var(--gold)">
         <b>Nota:</b> estas cifras son el ingreso de producto <b>antes</b> de la comisión de TikTok Shop, la tarifa de transacción y los impuestos, que la plataforma descuenta en la liquidación (settlement) antes de depositar. El depósito neto final vive en el reporte de <b>Finanzas → Liquidaciones</b> del Seller Center, no en este export de pedidos.
@@ -348,7 +422,7 @@
         <span><i style="background:var(--accent2)"></i>Tarjetas de producto — 453 pedidos · $51,007</span>
         <span><i style="background:var(--gold)"></i>Videos — 356 pedidos · $58,210</span>
       </div>
-      <div class="note"><b>El LIVE es tu canal #1:</b> genera el <b>57%</b> de los pedidos y <b>$124,518</b> de ingreso (53% del GMV). Más de la mitad de tus ventas ocurren durante transmisiones en vivo.</div>
+      <div class="note"><b>El LIVE es nuestro canal #1:</b> genera el <b>57%</b> de los pedidos y <b>$124,518</b> de ingreso (53% del GMV). Más de la mitad de nuestras ventas ocurren durante transmisiones en vivo.</div>
     </div>
     <div class="grid2" style="margin-top:20px">
       <div class="panel">
@@ -472,6 +546,163 @@
   </div>
 </div>
 
+<div class="modal-ov" id="planModal">
+  <div class="plan-modal">
+    <div class="plan-head">
+      <div>
+        <h2>Plan de acción · LIVE hacia $100 mil diarios</h2>
+        <p>Estrategia integral de transmisiones en vivo para BIU SUPPLY: parrilla de 3 hosts, precios mínimos por producto, pauta pagada, apoyo de operadores de TikTok y metas escalonadas. Basado en el desempeño real de 2026.</p>
+      </div>
+      <button class="plan-close" id="planClose" aria-label="Cerrar">&#10005;</button>
+    </div>
+    <div class="plan-body">
+
+      <!-- DIAGNÓSTICO -->
+      <div class="plan-sec">
+        <h3>1 · El diagnóstico <span class="badge">datos BIU SUPPLY</span></h3>
+        <p class="intro">El LIVE ya es nuestro canal #1, pero solo se transmite el <b>32% de los días</b>. El resto del tiempo la tienda BIU SUPPLY está cerrada. Cuando sí hay LIVE, cada día activo genera ~$1,857 y cada hora ~$848. El sábado está en CERO y el viernes casi muerto. La meta no exige inventar demanda: exige <b>abrir todos los días</b> y potenciar con ads y afiliados.</p>
+        <div class="plan-grid">
+          <div class="plan-kpi"><div class="k-lbl">Días con LIVE hoy</div><div class="k-val">32%</div><div class="k-foot">63 de 200 días</div></div>
+          <div class="plan-kpi"><div class="k-lbl">GMV por día activo</div><div class="k-val">$1,857</div><div class="k-foot">promedio actual</div></div>
+          <div class="plan-kpi"><div class="k-lbl">Ventana de oro</div><div class="k-val">16-19h</div><div class="k-foot">90% de ventas: tarde-noche</div></div>
+          <div class="plan-kpi"><div class="k-lbl">Potencial x frecuencia</div><div class="k-val">3.2x</div><div class="k-foot">solo por transmitir a diario</div></div>
+        </div>
+        <div class="callout"><b>Descubrimiento clave:</b> el domingo 12 de julio se transmitió por la mañana (8-9h) y en 1.5 horas vendió <b>$3,307</b> — más que un día activo promedio completo. El domingo tiene una segunda ventana matutina sin explotar.</div>
+      </div>
+
+      <!-- META -->
+      <div class="plan-sec">
+        <h3>2 · La meta y cómo se compone</h3>
+        <p class="intro">$100,000 diarios = $3,000,000 al mes. Nadie llega ahí con un solo canal. Así se reparte la meta entre las 4 palancas, con el LIVE como motor principal:</p>
+        <table class="ptable">
+          <thead><tr><th>Palanca</th><th class="num">% de la meta</th><th class="num">$ diarios</th><th>Cómo se logra</th></tr></thead>
+          <tbody>
+            <tr><td><b>LIVE</b> (3 hosts, parrilla diaria)</td><td class="num">50%</td><td class="num pmin">$50,000</td><td>2 bloques/día en franja 15-21h + bloque AM domingo</td></tr>
+            <tr><td><b>Pauta pagada</b> (Video/Product Ads + GMV Max)</td><td class="num">30%</td><td class="num pmin">$30,000</td><td>ads sobre productos héroe, escalando por ROAS</td></tr>
+            <tr><td><b>Afiliados</b> (LIVE + video)</td><td class="num">12%</td><td class="num pmin">$12,000</td><td>50+ afiliados activos, top haciendo sus propios LIVE</td></tr>
+            <tr><td><b>Orgánico</b> (tarjetas/videos/búsqueda)</td><td class="num">8%</td><td class="num pmin">$8,000</td><td>catálogo optimizado + videos cortos diarios</td></tr>
+          </tbody>
+        </table>
+        <div class="phase-row">
+          <div class="phase"><div class="ph-t">Fase 1 · Mes 1-2</div><div class="ph-meta">$25k/día</div><div class="ph-d">Consolidar 7 días de LIVE. Encender sábado y viernes. Activar medición de ads.</div></div>
+          <div class="phase"><div class="ph-t">Fase 2 · Mes 3-4</div><div class="ph-meta">$50k/día</div><div class="ph-d">Doblar bloques en días fuertes. Ads escalando. Reclutar afiliados.</div></div>
+          <div class="phase"><div class="ph-t">Fase 3 · Mes 5-6</div><div class="ph-meta">$100k/día</div><div class="ph-d">Parrilla completa + ads a full ROAS + 50 afiliados + operadores TikTok.</div></div>
+        </div>
+      </div>
+
+      <!-- HOSTS -->
+      <div class="plan-sec">
+        <h3>3 · Los 3 hosts <span class="badge">Jaqueline · Uriel · Laura</span></h3>
+        <p class="intro">De <b>lunes a viernes los 3 transmiten en vivo cada día</b> en el bloque principal, dando máxima presencia y variedad en la ventana de oro. Los <b>turnos de noche y de fin de semana se reparten por rotación equilibrada</b>, para que la carga sea justa entre todos. Cada uno aporta un estilo:</p>
+        <div class="hostgrid">
+          <div class="hostcard">
+            <div class="hname"><span class="hdot" style="background:#E14300"></span>Jaqueline</div>
+            <div class="hrole">Host principal · Ventana de oro</div>
+            <ul><li>Toma el bloque pico (16-19h) los días fuertes</li><li>Ancla los productos héroe de mayor ticket</li><li>Referente de la marca en vivo</li></ul>
+          </div>
+          <div class="hostcard">
+            <div class="hname"><span class="hdot" style="background:#0a7d8c"></span>Uriel</div>
+            <div class="hrole">Host de volumen · Tarde-noche</div>
+            <ul><li>Bloques de noche (18-21h) y días de volumen</li><li>Ganchos de entrada: recortadora, herramientas</li><li>Ritmo alto, muchas unidades</li></ul>
+          </div>
+          <div class="hostcard">
+            <div class="hname"><span class="hdot" style="background:#E0A83B"></span>Laura</div>
+            <div class="hrole">Host de expansión · Fines y AM</div>
+            <ul><li>Cubre sábado (hoy en cero) y AM domingo</li><li>Explora franjas nuevas y demos de producto</li><li>Rota como relevo entre semana</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARRILLA -->
+      <div class="plan-sec">
+        <h3>4 · Parrilla semanal</h3>
+        <p class="intro">De <b>lunes a viernes los 3 hosts transmiten en vivo cada día</b> en el bloque de día (la ventana de oro), maximizando presencia en el horario que más vende. Los <b>turnos de noche y los fines de semana se rotan de forma equilibrada</b> entre Jaqueline, Uriel y Laura, para que la carga sea justa y nadie se sobrecargue:</p>
+        <table class="parrilla">
+          <thead><tr><th>Franja</th><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th><th>Dom</th></tr></thead>
+          <tbody>
+            <tr><td class="franja">AM 8-10h <span style="font-weight:400;color:#999">(dom)</span></td><td class="p-off">—</td><td class="p-off">—</td><td class="p-off">—</td><td class="p-off">—</td><td class="p-off">—</td><td class="p-off">—</td><td class="p-lau">Laura</td></tr>
+            <tr><td class="franja">Día 15-18h</td><td class="p-all">Los 3</td><td class="p-all">Los 3</td><td class="p-all">Los 3</td><td class="p-all">Los 3</td><td class="p-all">Los 3</td><td class="p-jaq">Jaqueline</td><td class="p-jaq">Jaqueline</td></tr>
+            <tr><td class="franja">Noche 18-21h</td><td class="p-jaq">Jaqueline</td><td class="p-uri">Uriel</td><td class="p-lau">Laura</td><td class="p-uri">Uriel</td><td class="p-lau">Laura</td><td class="p-uri">Uriel</td><td class="p-lau">Laura</td></tr>
+          </tbody>
+        </table>
+        <p class="intro" style="margin-top:14px;margin-bottom:6px"><b>Rotación equilibrada (ejemplo semana 1):</b></p>
+        <table class="ptable">
+          <thead><tr><th>Host</th><th>Lun-Vie (día)</th><th class="num">Noches entre semana</th><th class="num">Fin de semana</th><th>Turnos rotativos</th></tr></thead>
+          <tbody>
+            <tr><td><b>Jaqueline</b></td><td>En vivo los 5 días</td><td class="num">Lun</td><td class="num">Sáb día + Dom día</td><td>3 turnos</td></tr>
+            <tr><td><b>Uriel</b></td><td>En vivo los 5 días</td><td class="num">Mar + Jue</td><td class="num">Sáb noche</td><td>3 turnos</td></tr>
+            <tr><td><b>Laura</b></td><td>En vivo los 5 días</td><td class="num">Mié + Vie</td><td class="num">Dom AM + Dom noche</td><td>4 turnos</td></tr>
+          </tbody>
+        </table>
+        <div class="callout">De lunes a viernes los 3 están en cámara en el bloque de día. Las <b>noches y los fines de semana rotan de verdad</b>: cada host descansa varias noches por semana — nadie carga siempre el turno nocturno. Esta semana Jaqueline hace solo 1 noche (lunes) y su fin de semana es de día; la <b>rotación se recorre +1 cada semana</b>, así que quien tuvo más noches esta semana tendrá menos la siguiente y todos promedian igual en el mes. <b>El sábado se enciende desde la semana 1.</b></div>
+      </div>
+
+      <!-- PRECIOS -->
+      <div class="plan-sec">
+        <h3>5 · Precios mínimos por producto <span class="badge">para la meta</span></h3>
+        <p class="intro">El precio mínimo protege nuestro margen mientras da espacio a promociones en vivo. El <b>precio LIVE</b> es el piso recomendado en transmisión (permite el "descuento de show"); el <b>piso absoluto</b> es el límite que nunca se cruza para no vender con pérdida tras comisión de TikTok, envío y descuentos. Los roles indican para qué sirve cada producto en el LIVE:</p>
+        <table class="ptable">
+          <thead><tr><th>Producto</th><th class="num">Precio actual</th><th class="num">Mín. LIVE</th><th class="num">Piso absoluto</th><th>Rol en el LIVE</th></tr></thead>
+          <tbody>
+            <tr><td><b>Depiladora Rostro y Cuerpo</b></td><td class="num">$139</td><td class="num pmin">$129</td><td class="num ppiso">$115</td><td><span class="rolechip">HÉROE #1 · ancla</span></td></tr>
+            <tr><td>Set Vajilla Orgánica 62pz</td><td class="num">$237</td><td class="num pmin">$219</td><td class="num ppiso">$199</td><td><span class="rolechip">Ticket alto</span></td></tr>
+            <tr><td>Recortadora bikini 2en1</td><td class="num">$59</td><td class="num pmin">$55</td><td class="num ppiso">$49</td><td><span class="rolechip">Gancho de volumen</span></td></tr>
+            <tr><td>Máscara Terapia Lumínica</td><td class="num">$189</td><td class="num pmin">$175</td><td class="num ppiso">$159</td><td><span class="rolechip">Premium · demo</span></td></tr>
+            <tr><td>Juego 46 Herramientas</td><td class="num">$46</td><td class="num pmin">$44</td><td class="num ppiso">$39</td><td><span class="rolechip">Gancho masculino</span></td></tr>
+            <tr><td>Masajeador Microcorriente</td><td class="num">$63</td><td class="num pmin">$59</td><td class="num ppiso">$53</td><td><span class="rolechip">Complemento</span></td></tr>
+          </tbody>
+        </table>
+        <div class="callout"><b>Estrategia de precio en vivo:</b> abre con el producto héroe a precio mínimo LIVE como "oferta de entrada" para atraer audiencia, sube el ticket con vajilla y máscara (productos de mayor valor), y usa recortadora + herramientas como ganchos de volumen que mantienen el flujo de pedidos. Nunca bajes del piso absoluto ni en la promo más agresiva.</div>
+      </div>
+
+      <!-- ADS -->
+      <div class="plan-sec">
+        <h3>6 · Pauta con ads <span class="badge">para la especialista</span></h3>
+        <p class="intro">Los ads son la única palanca que da volumen <b>predecible y escalable con dinero</b>. Hoy es nuestro punto ciego: ni siquiera se puede medir cuánto vende. Recomendaciones concretas para tu especialista de ads:</p>
+        <div class="adsbox">
+          <h4>&#9654; Prioridad 0 — Activar medición</h4>
+          <p style="font-size:13px;color:var(--muted);line-height:1.55">Antes de gastar un peso más: conectar TikTok Ads Manager con el Shop, activar el pixel/eventos de Shop y el reporte de GMV atribuido. Sin esto se vuela a ciegas. El error "user not login" al exportar suele resolverse recargando sesión y buscando el archivo en el Centro de Descargas.</p>
+        </div>
+        <ul class="steplist">
+          <li><b>Empezar con LIVE Shopping Ads (LSA):</b> promocionar las transmisiones en vivo para meter audiencia fresca al LIVE mientras ocurre. Es el ads que mejor se acopla a nuestro canal fuerte.</li>
+          <li><b>Product Shopping Ads (PSA) sobre los 3 héroes:</b> depiladora, vajilla y recortadora. Empezar con presupuesto de prueba por producto y dejar correr 3-4 días antes de juzgar.</li>
+          <li><b>GMV Max</b> una vez que haya datos de conversión: deja que el algoritmo optimice hacia ventas. Es la palanca de escala, pero necesita historial primero.</li>
+          <li><b>Regla de escalado:</b> subir presupuesto solo a las campañas con <b>ROAS positivo sostenido</b> (idealmente 3x+). Matar rápido lo que no convierte. Escalar 20-30% cada 2-3 días, no de golpe.</li>
+          <li><b>Retargeting:</b> a quien vio el LIVE o el producto y no compró. Es el ads más barato y rentable; recupera demanda ya calentada.</li>
+        </ul>
+        <div class="callout dark"><b>Presupuesto sugerido (fases):</b> Fase 1 arranca en modo prueba (<b>$300-500/día</b>) solo para validar qué producto y formato convierten. Fase 2, con ROAS probado, sube a <b>$1,500-3,000/día</b>. Fase 3, para sostener los $30k/día que aporta ads a la meta, apunta a <b>$6,000-10,000/día</b> — pero solo si el ROAS lo justifica. La regla nunca cambia: <b>el presupuesto sigue al ROAS, no al calendario.</b> Reserva ~15-20% del gasto para probar productos y creativos nuevos.</div>
+      </div>
+
+      <!-- TIKTOK + AFILIADOS -->
+      <div class="plan-sec">
+        <h3>7 · Apoyo de TikTok y afiliados</h3>
+        <p class="intro">TikTok premia a los sellers que operan en serio. Con parrilla diaria calificas para apoyos que aceleran todo:</p>
+        <ul class="steplist">
+          <li><b>Operadores / Partner de TikTok (TSP):</b> pedir un ejecutivo de cuenta asignado. Dan acceso a campañas co-fondeadas, cupones de plataforma (el subsidio que ya recibes), y prioridad en LIVE. Con volumen creciente, TikTok lo otorga.</li>
+          <li><b>Programa de afiliados abierto:</b> subir comisión a 20-25% en los productos héroe y abrir el marketplace de afiliados. Meta: pasar de 40 a <b>50+ afiliados activos</b> en la fase 2.</li>
+          <li><b>Afiliados haciendo su propio LIVE:</b> nuestras estrellas (liz.tts0, iptefgh) transmitiendo en paralelo multiplican horas de venta sin cargar a nuestros 3 hosts.</li>
+          <li><b>Campañas y eventos de TikTok:</b> inscribir los productos héroe en las campañas de temporada (Mega Sale, etc.) donde TikTok mete tráfico y subsidio extra.</li>
+        </ul>
+      </div>
+
+      <!-- ARRANQUE -->
+      <div class="plan-sec">
+        <h3>8 · Qué hacer esta semana</h3>
+        <ul class="steplist">
+          <li><b>Fijar la parrilla diaria</b> en la ventana de oro (15-19h) con Jaqueline, Uriel y Laura rotando, y <b>encender sábado y domingo AM</b> desde ya.</li>
+          <li><b>Activar la medición de ads</b> (pixel + GMV atribuido) para dejar de volar a ciegas.</li>
+          <li><b>Cargar los precios mínimos</b> por producto y el guion de show con los 3 héroes.</li>
+          <li><b>Lanzar la campaña de prueba de ads</b> ($300-500/día) sobre la depiladora y promover el LIVE con LSA.</li>
+          <li><b>Solicitar ejecutivo TikTok</b> y abrir el programa de afiliados con comisión 20-25%.</li>
+          <li><b>Sostener 4 semanas mínimo</b> antes de evaluar: la consistencia diaria es lo que entrena al algoritmo a mandarte audiencia.</li>
+        </ul>
+        <div class="callout"><b>El multiplicador más barato es la constancia.</b> No necesitas inventar demanda — ya demostraste que el LIVE vende. Necesitas abrir la tienda los 7 días, en la franja correcta, con precios que protejan el margen y ads que amplifiquen lo que ya funciona.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script>
 const INK='#1A1A1A',MUT='#767674',ACC='#E14300',ACC2='#E06B00',GOLD='#E01C00',LINE='#E8E8E4',NIEBLA='#8A8A8A';
 Chart.defaults.font.family="'Montserrat',sans-serif";
@@ -566,7 +797,7 @@ function render(){
     dSub.textContent='Productos en «'+dCat.categoria+'». Haz clic en uno para ver su detalle.';
     let rows=dCat.productos.filter(p=>!q||p.producto.toLowerCase().includes(q));
     rows=sortRows(rows);
-    const brandBanner=dCat.marca_propia?`<div class="brand-banner">★ <b>${esc(dCat.categoria)}</b> — línea de marca propia de Foro B. ${dCat.n_prod} productos · ${dCat.pedidos.toLocaleString('es-MX')} pedidos · $${dCat.ingreso.toLocaleString('es-MX')} en ingreso.</div>`:'';
+    const brandBanner=dCat.marca_propia?`<div class="brand-banner">★ <b>${esc(dCat.categoria)}</b> — línea de marca propia de BIU SUPPLY. ${dCat.n_prod} productos · ${dCat.pedidos.toLocaleString('es-MX')} pedidos · $${dCat.ingreso.toLocaleString('es-MX')} en ingreso.</div>`:'';
     dv.innerHTML=`<button class="backbtn" id="dback">‹ Volver a categorías</button>${brandBanner}
     <table class="drill-table"><thead><tr>
       ${th('producto','Producto')}${th('pedidos','Pedidos','num')}${th('unidades','Unid.','num')}${th('precio','Precio','num')}${th('ingreso','Ingreso','num')}
@@ -647,6 +878,21 @@ const RECANCEL = [{"buyer": "javierreyes2968", "cancel": 5, "total": 6, "complet
     r.addEventListener('click',toggle);
     r.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
   });
+  const open=()=>{modal.classList.add('open');document.body.style.overflow='hidden';};
+  const close=()=>{modal.classList.remove('open');document.body.style.overflow='';};
+  card.addEventListener('click',open);
+  card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+  closeB.addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
+/* ===== MODAL: Plan de acción LIVE ===== */
+(function(){
+  const card=document.getElementById('planCard'),
+        modal=document.getElementById('planModal'),
+        closeB=document.getElementById('planClose');
+  if(!card||!modal)return;
   const open=()=>{modal.classList.add('open');document.body.style.overflow='hidden';};
   const close=()=>{modal.classList.remove('open');document.body.style.overflow='';};
   card.addEventListener('click',open);
